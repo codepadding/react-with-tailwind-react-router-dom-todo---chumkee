@@ -4,10 +4,23 @@ import { Link } from "react-router-dom";
 const TodoPage = () => {
   const [value, setValue] = useState("");
   const [todos, setTodos] = useState([]);
+  const [edit,setEdit] = useState(false);
+  const [editIdex,setEditIndex] = useState(null);
 
   const addNote = () => {
-    todos.push(value);
-    setValue("");
+
+    if(edit){
+      let list = [...todos];
+      list[editIdex] = value;
+      setTodos(list);
+      setEdit(false);
+      setEditIndex(null);
+      setValue("");
+    }else{
+      todos.push(value);
+      setValue("");
+    }
+
   };
 
   const inputValueChange = (event) => {
@@ -30,6 +43,13 @@ const TodoPage = () => {
     // setTodos(newTodos);
   };
 
+  const editTodo = (index) => {
+    const editableValue = todos[index]
+    setValue(editableValue)
+    setEdit(true)
+    setEditIndex(index)
+  }
+
 
 
   return (
@@ -47,11 +67,11 @@ const TodoPage = () => {
             // onChange={inputValueChange}
           />
           <button onClick={addNote} className="p-3">
-            Add
+            {edit ? 'Edit' : 'Add'}
           </button>
         </div>
         {/* list */}
-        <div className="w-80 h-[450px] bg-slate-500">
+        <div className="w-80 h-[450px] bg-slate-500 overflow-scroll">
           {todos.map((item, index) => {
             return (
               <div
@@ -61,7 +81,9 @@ const TodoPage = () => {
                   <span>{index + 1}</span> - <span>{item}</span>{" "}
                 </div>
                 <div className="flex gap-1">
-                  <button>Edit</button>
+                  <button 
+                  onClick={()=>{editTodo(index)}}
+                  >Edit</button>
                   <button
                     onClick={() => {
                       deleteTodo(index);
